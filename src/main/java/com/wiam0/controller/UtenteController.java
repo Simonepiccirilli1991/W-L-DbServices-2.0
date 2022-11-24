@@ -18,6 +18,7 @@ public class UtenteController {
 
 	@Autowired private UtenteService utService;
 	
+	// salva utente
 	@PostMapping("/save/ut")
 	public BaseWiamResponse salvaUtente(@RequestBody UtenteRequest utente) {
 		
@@ -25,7 +26,7 @@ public class UtenteController {
 		oResponse = utService.salvaUtente(utente);
 		return oResponse;
 	}
-	
+	// modifica utente
 	@PostMapping("/modifica/ut")
 	public BaseWiamResponse modificaUtente(@RequestBody Utente utente) {
 		
@@ -33,7 +34,7 @@ public class UtenteController {
 		oResponse = utService.modificaInfoUtente(utente);
 		return oResponse;
 	}
-	
+	// brasa utente
 	@PostMapping("/cancella/ut")
 	public BaseWiamResponse cancellaUtente(@RequestBody Utente utente) {
 		BaseWiamResponse oResponse = new BaseWiamResponse();
