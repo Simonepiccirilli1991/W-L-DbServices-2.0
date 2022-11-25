@@ -46,6 +46,10 @@ public class Utente {
             cascade = CascadeType.ALL)
     private PinUtente pinUtente;
 	
+	@OneToOne(mappedBy = "utente", fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL)
+	private DispoConteUtente dispoUtente;
+	
 	public String getBt() {
 		return bt;
 	}
@@ -99,6 +103,12 @@ public class Utente {
 	}
 	public void setPinUtente(PinUtente pinUtente) {
 		this.pinUtente = pinUtente;
+	}
+	public DispoConteUtente getDispoUtente() {
+		return dispoUtente;
+	}
+	public void setDispoUtente(DispoConteUtente dispoUtente) {
+		this.dispoUtente = dispoUtente;
 	}
 	
 	
