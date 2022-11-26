@@ -2,6 +2,8 @@ package com.wiam0.service.dispo;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import com.wiam0.model.entity.DispoConteUtente;
@@ -18,7 +20,7 @@ public class DispoService {
 	@Autowired
 	DispoUtenteRepo dispoRepo;
 	
-	
+	@Transactional(isolation = Isolation.REPEATABLE_READ)
 	public DIspoResponse dispoPayService(DispoRequest request) {
 
 		DIspoResponse response = new DIspoResponse();
@@ -54,9 +56,35 @@ public class DispoService {
 		
 		// controllo che tipo di conto ha
 		if(Boolean.TRUE.equals(userToPay.getTipoConto().equals(Constants.Dispo.DISPO_DEBIT))) {
-			
-			//TODO creare metodo che fa effettiva transazione
-			response.setTransactionOk(makeTransactionDebit(request.getImporto(), userToPay));
+			// controllo che abbia i soldi o sia nel limite per debiti
+			if(Boolean.TRUE.equals(makeTransactionDebit(request.getImporto(), userToReceive))) {
+				// ha cash quindi fare effettivo update dei 2 conti
+				Double soldiConto = userToPay.getSaldoAttuale();
+				Double debitoConto = userToPay.getDebito();
+				//caso1 ha soldi sul conto per coprire una parte
+				if(soldiConto != 0) {
+					//controllo se puo pagare diretto
+					if(soldiConto >= request.getImporto()) {
+						Double updateContoPay = soldiConto - request.getImporto();
+						// pago diretto
+						dispoRepo.addBalance(request.getBtToPay(), request.getImporto());
+					}//non puo pagare diretto
+					else {
+						// calcolo quanto scalare a conto e aggiungere a debito
+					}
+					
+				}//caso2 non li ha vado diretto su debito, so gia che puo farlo se arriva qui
+				else {
+					
+				}
+			}// non ha soldi e supera platform debito torno eccezione 
+			else {
+				response.setCodiceEsito("erko-cash");
+				response.setIsError(true);
+				response.setErrDsc("Operazione non possibile, controllare platform");
+				response.setTransactionOk(false);
+				return response;
+			}
 		}else {
 			//TODO creare metodo per fare transazione sui prepragati
 		}
@@ -84,4 +112,5 @@ public class DispoService {
 		//caso 3 non dovrebbe esserci ma e venerdi e so stanco
 		return false;
 	}
+	
 }

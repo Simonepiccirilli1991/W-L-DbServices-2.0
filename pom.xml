@@ -14,7 +14,7 @@
 	<name>Wiam0-DbServices</name>
 	<description>Wiam0-DbServices</description>
 	<properties>
-		<java.version>11</java.version>
+		<java.version>17</java.version>
 	</properties>
 	<dependencies>
 		<dependency>
