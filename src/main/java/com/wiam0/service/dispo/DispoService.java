@@ -19,7 +19,7 @@ public class DispoService {
 
 	@Autowired
 	DispoUtenteRepo dispoRepo;
-	
+
 	@Transactional(isolation = Isolation.REPEATABLE_READ)
 	public DIspoResponse dispoPayService(DispoRequest request) {
 
@@ -32,11 +32,11 @@ public class DispoService {
 			response.setErrDsc("Missing parameter on request");
 			return response;
 		}
-		
-		
+
+
 		DispoConteUtente userToPay = null;
 		DispoConteUtente userToReceive = null;
-		
+
 		try {
 			userToPay = dispoRepo.findByUtenteUsername(request.getUsernameToPay());
 			userToReceive = dispoRepo.findByUtenteUsername(request.getUsernameToReceive());
@@ -53,7 +53,7 @@ public class DispoService {
 			response.setErrDsc("Utente dispo conto non trovato");
 			return response;
 		}
-		
+
 		// controllo che tipo di conto ha
 		if(Boolean.TRUE.equals(userToPay.getTipoConto().equals(Constants.Dispo.DISPO_DEBIT))) {
 			// controllo che abbia i soldi o sia nel limite per debiti
@@ -67,15 +67,27 @@ public class DispoService {
 					if(soldiConto >= request.getImporto()) {
 						Double updateContoPay = soldiConto - request.getImporto();
 						// pago diretto
-						dispoRepo.addBalance(request.getBtToPay(), request.getImporto());
+						dispoRepo.addBalance(request.getBtToPay(), updateContoPay);
+						// addo a chi riceve
+						dispoRepo.addBalance(request.getBtToReceiv(), request.getImporto());
 					}//non puo pagare diretto
 					else {
 						// calcolo quanto scalare a conto e aggiungere a debito
+						Double effective = request.getImporto() - soldiConto;
+						debitoConto = debitoConto + effective;
+						dispoRepo.addBalanceDebit(request.getUsernameToPay(), 0, debitoConto);
+						// pago chi deve riceve
+						dispoRepo.addBalance(request.getBtToReceiv(), request.getImporto());
 					}
-					
+
 				}//caso2 non li ha vado diretto su debito, so gia che puo farlo se arriva qui
 				else {
-					
+					// calcolo quanto scalare a conto e aggiungere a debito
+					Double effective = request.getImporto() - soldiConto;
+					debitoConto = debitoConto + effective;
+					dispoRepo.addBalanceDebit(request.getUsernameToPay(), 0, debitoConto);
+					// pago chi deve riceve
+					dispoRepo.addBalance(request.getBtToReceiv(), request.getImporto());
 				}
 			}// non ha soldi e supera platform debito torno eccezione 
 			else {
@@ -86,31 +98,44 @@ public class DispoService {
 				return response;
 			}
 		}else {
-			//TODO creare metodo per fare transazione sui prepragati
+			Double soldiConto = userToPay.getSaldoAttuale();
+
+			if(soldiConto >= request.getImporto()) {
+				Double updateContoPay = soldiConto - request.getImporto();
+				// pago diretto
+				dispoRepo.addBalance(request.getBtToPay(), updateContoPay);
+				// addo a chi riceve
+				dispoRepo.addBalance(request.getBtToReceiv(), request.getImporto());
+			}else {
+				response.setCodiceEsito("erko-cash");
+				response.setIsError(true);
+				response.setErrDsc("Operazione non possibile, controllare platform");
+				response.setTransactionOk(false);
+				return response;
+			}
 		}
-		
-		return response;
-	}
-	
-	private Boolean makeTransactionDebit(Double importo,DispoConteUtente conto ) {
-		
-		//caso 1 ci sono soldi sul conto
-		if(importo <= conto.getSaldoAttuale()) {
-			//TODO fai transazione
-			return true;
+			return response;
 		}
-		//caso 2 non ci sono soldi su conto, ma puo andare in debito
-		else if(importo > conto.getSaldoAttuale() && Constants.Dispo.DEBIT_LIMIT > conto.getDebito()) {
-			
-			//controllo che importo non faccia superare tetto massimo
-			if(conto.getDebito()+importo <= Constants.Dispo.DEBIT_LIMIT+conto.getSaldoAttuale()) {
+
+		private Boolean makeTransactionDebit(Double importo,DispoConteUtente conto ) {
+
+			//caso 1 ci sono soldi sul conto
+			if(importo <= conto.getSaldoAttuale()) {
 				//TODO fai transazione
-			}else
-				return false;
-			
+				return true;
+			}
+			//caso 2 non ci sono soldi su conto, ma puo andare in debito
+			else if(importo > conto.getSaldoAttuale() && Constants.Dispo.DEBIT_LIMIT > conto.getDebito()) {
+
+				//controllo che importo non faccia superare tetto massimo
+				if(conto.getDebito()+importo <= Constants.Dispo.DEBIT_LIMIT+conto.getSaldoAttuale()) {
+					//TODO fai transazione
+				}else
+					return false;
+
+			}
+			//caso 3 non dovrebbe esserci ma e venerdi e so stanco
+			return false;
 		}
-		//caso 3 non dovrebbe esserci ma e venerdi e so stanco
-		return false;
-	}
 	
 }
