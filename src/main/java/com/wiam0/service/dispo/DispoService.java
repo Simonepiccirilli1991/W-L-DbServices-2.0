@@ -57,7 +57,7 @@ public class DispoService {
 		// controllo che tipo di conto ha
 		if(Boolean.TRUE.equals(userToPay.getTipoConto().equals(Constants.Dispo.DISPO_DEBIT))) {
 			// controllo che abbia i soldi o sia nel limite per debiti
-			if(Boolean.TRUE.equals(makeTransactionDebit(request.getImporto(), userToReceive))) {
+			if(Boolean.TRUE.equals(makeTransactionDebit(request.getImporto(), userToPay))) {
 				// ha cash quindi fare effettivo update dei 2 conti
 				Double soldiConto = userToPay.getSaldoAttuale();
 				Double debitoConto = userToPay.getDebito();
@@ -114,6 +114,9 @@ public class DispoService {
 				return response;
 			}
 		}
+		
+			response.setCodiceEsito("00");
+			response.setTransactionOk(true);
 			return response;
 		}
 
