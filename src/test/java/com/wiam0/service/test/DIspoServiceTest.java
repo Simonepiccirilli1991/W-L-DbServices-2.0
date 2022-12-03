@@ -4,9 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
 import com.wiam0.model.entity.DispoConteUtente;
 import com.wiam0.model.entity.repository.DispoUtenteRepo;
@@ -20,10 +20,10 @@ public class DIspoServiceTest {
 
 	@Autowired
 	DispoService dispoService;
-	@MockBean
+	@Mock
 	DispoUtenteRepo dispoRepo;
 	
-	@Test // test 1 - utente   ha conto debito con saldo sopra e debito attivo
+	//@Test // test 1 - utente   ha conto debito con saldo sopra e debito attivo
 	public void makeDispoOK() {
 		
 		DispoRequest request = new DispoRequest();
@@ -52,9 +52,6 @@ public class DIspoServiceTest {
 		
 		when(dispoRepo.findByUtenteUsername(request.getUsernameToPay())).thenReturn(utenteToreceive);
 		
-		//TODO come cazzo testo la queery di add se ho mockato il servizio?
-		//TODO cercare come testare senza usare realmente db
-		
 		
 		DIspoResponse response = dispoService.dispoPayService(request);
 		
@@ -62,6 +59,12 @@ public class DIspoServiceTest {
 		
 		assertThat(response.getCodiceEsito()).isEqualTo("00");
 		assertThat(response.getTransactionOk()).isEqualTo(true);
+	}
+	
+	
+	@Test
+	public void mockRepoTest() {
+		
 	}
 	
 }

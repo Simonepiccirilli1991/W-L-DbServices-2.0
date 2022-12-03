@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    password:
+    url: jdbc:h2:mem:wiam0;init=CREATE SCHEMA IF NOT EXISTS wiam0;
+    username: sa
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
