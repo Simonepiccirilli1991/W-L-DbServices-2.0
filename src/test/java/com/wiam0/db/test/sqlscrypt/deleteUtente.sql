@@ -1,1 +1,1 @@
-delete from utente;
+delete from wiam0.utente;

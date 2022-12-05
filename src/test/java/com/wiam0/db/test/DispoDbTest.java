@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 
@@ -26,7 +27,7 @@ public class DispoDbTest {
 	// funziona perfettamente, il problema e fargli leggere lo schema, al momento sono tolti ma va trovata fix
 	@Test
 	public void testUtente1() {
-		 Utente response = utenteRepo.findByUsername("usernameProva1");
+		 Utente response = utenteRepo.findByUsernameTest("usernameProva1");
 		 
 		 System.out.println(response);
 		 assertThat(response.getAbi()).isEqualTo("abiProva1");
