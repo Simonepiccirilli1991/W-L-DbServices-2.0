@@ -35,7 +35,7 @@ public interface UtenteRepo extends JpaRepository<Utente, String>{
 			nativeQuery = true)
 	List<Utente> findAllTest();
 	
-	@Query(value = "insert into wiam0.utente (id, bt, abi, username, email, cellulare ) values (:id ,:bt, :abi, :username, :email, :cellulare)",
-			nativeQuery = true)
-	void saveUtente(@Param("utente") Utente utente);
+//	@Query(value = "insert into wiam0.utente (id, bt, abi, username, email, cellulare ) values (:id ,:bt, :abi, :username, :email, :cellulare)",
+//			nativeQuery = true)
+//	void saveUtente(@Param("utente") Utente utente);
 }

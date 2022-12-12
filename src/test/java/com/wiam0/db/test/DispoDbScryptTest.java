@@ -19,28 +19,30 @@ import com.wiam0.model.entity.repository.UtenteRepo;
 @DataJpaTest
 @AutoConfigureTestDatabase //h2
 @ActiveProfiles("test")
-public class DispoDbTest {
+@Sql(scripts = "sqlscrypt/insertUtente.sql")
+@Sql(scripts = "sqlscrypt/deleteUtente.sql", executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
+public class DispoDbScryptTest {
 
 	@Autowired
 	UtenteRepo utenteRepo;
 	
+	// funziona perfettamente
 	@Test
-	public void testUtente3() {
+	public void testUtente1() {
+		 Utente response = utenteRepo.findByUsernameTest("usernameProva1");
+		 
+		 System.out.println(response);
+		 assertThat(response.getAbi()).isEqualTo("abiProva1");
+	}
+	
+	@Test
+	public void testUtente2() {
+		 List<Utente> response = utenteRepo.findAllTest();
+		 
+		 System.out.println(response);
+		 
+		Optional<Utente>  iUtente = response.stream().filter(resp -> resp.getUsername().equals("usernameProva1")).findAny();
 		
-		 Utente utente = new Utente();
-		 utente.setAbi("abi-Test1");
-		 utente.setBt("bt-Test1");
-		 utente.setCellulare("cellulare-Test1");
-		 utente.setEmail("email-Test1");
-		 utente.setUsername("username-Test1");
-		 utente.setId(55);
-		 
-		 utenteRepo.save(utente);
-		 
-		 List<Utente> response = utenteRepo.findAll();
-		 
-		Optional<Utente>  iUtente = response.stream().filter(resp -> resp.getUsername().equals("username-Test1")).findAny();
-		
-		assertThat(iUtente.get().getAbi()).isEqualTo("abi-Test1");
+		assertThat(iUtente.get().getAbi()).isEqualTo("abiProva1");
 	}
 }

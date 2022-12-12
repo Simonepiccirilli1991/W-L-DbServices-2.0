@@ -110,6 +110,12 @@ public class Utente {
 	public void setDispoUtente(DispoConteUtente dispoUtente) {
 		this.dispoUtente = dispoUtente;
 	}
+	public long getId() {
+		return id;
+	}
+	public void setId(long id) {
+		this.id = id;
+	}
 	
 	
 	

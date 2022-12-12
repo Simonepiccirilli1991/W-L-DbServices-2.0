@@ -16,7 +16,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
 @Entity
-@Table(schema="wiam0", name = "sicurezzaUtente")
+@Table(name = "sicurezzaUtente")
 public class SicurezzaUtente {
 	
 	@Id

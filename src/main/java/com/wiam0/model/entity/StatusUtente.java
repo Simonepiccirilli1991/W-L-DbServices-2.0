@@ -15,7 +15,7 @@ import org.hibernate.annotations.OnDeleteAction;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@Table(schema="wiam0", name = "status")
+@Table(name = "status")
 public class StatusUtente {
 
 	@Id

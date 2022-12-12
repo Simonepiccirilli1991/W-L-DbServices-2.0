@@ -2,15 +2,18 @@ spring:
   datasource:
     driver-class-name: org.h2.Driver
     password:
-    url: jdbc:h2:mem:wiam0;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=MYSQL;
+    url: jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=MYSQL;
     username: sa
   jpa:
+    
     database-platform: org.hibernate.dialect.H2Dialect
     generate-ddl: true
     hibernate:
       ddl-auto: create-drop
-      use-new-id-generator-mappings: false
+      use-new-id-generator-mappings: false 
+    properties:
+      hibernate.default_schema: wiam0
+       
 server:
  port: 8082
  
-
