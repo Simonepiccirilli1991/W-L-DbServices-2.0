@@ -67,28 +67,28 @@ public class DispoService {
 			// controllo che abbia i soldi o sia nel limite per debiti
 			if(Boolean.TRUE.equals(makeTransactionDebit(request.getImporto(), userToPay))) {
 				// ha cash quindi fare effettivo update dei 2 conti
-				Double soldiConto = userToPay.getSaldoAttuale();
+				Double soldiConto = userToPay.getSaldoattuale();
 				Double debitoConto = userToPay.getDebito();
 				//caso1 ha soldi sul conto per coprire una parte
 				if(soldiConto != 0) {
 					//controllo se puo pagare diretto
 					if(soldiConto >= request.getImporto()) {
 						Double updateContoPay = soldiConto - request.getImporto();
-						Double updateContoReceive = userToReceive.getSaldoAttuale() + request.getImporto();
+						Double updateContoReceive = userToReceive.getSaldoattuale() + request.getImporto();
 						// scalo soldi da chi paga
-						userToPay.setSaldoAttuale(updateContoPay);
-						dispoRepo.addBalance(userToPay.getNumeroConto(), updateContoPay);
+						userToPay.setSaldoattuale(updateContoPay);
+						dispoRepo.addBalance(userToPay.getNumeroconto(), updateContoPay);
 						// addo soldi a chi riceve
-						dispoRepo.addBalance(userToReceive.getNumeroConto(), updateContoReceive);
+						dispoRepo.addBalance(userToReceive.getNumeroconto(), updateContoReceive);
 					}//non puo pagare diretto
 					else {
 						// calcolo quanto scalare a conto e aggiungere a debito
 						Double effective = request.getImporto() - soldiConto;
 						debitoConto = debitoConto + effective;	
-						dispoRepo.addBalanceDebit(userToPay.getNumeroConto(), 0.00, debitoConto);
+						dispoRepo.addBalanceDebit(userToPay.getNumeroconto(), 0.00, debitoConto);
 						// pago chi deve riceve
-						Double updateContoReceive = userToReceive.getSaldoAttuale() + request.getImporto();
-						dispoRepo.addBalance(userToReceive.getNumeroConto(), updateContoReceive);
+						Double updateContoReceive = userToReceive.getSaldoattuale() + request.getImporto();
+						dispoRepo.addBalance(userToReceive.getNumeroconto(), updateContoReceive);
 					}
 
 				}//caso2 non li ha vado diretto su debito, so gia che puo farlo se arriva qui
@@ -97,12 +97,12 @@ public class DispoService {
 					Double effective = request.getImporto() - soldiConto;
 					debitoConto = debitoConto + effective;
 					userToPay.setDebito(debitoConto);
-					userToPay.setSaldoAttuale(0.00);
+					userToPay.setSaldoattuale(0.00);
 					
-					dispoRepo.addBalanceDebit(userToPay.getNumeroConto(), 0.00, debitoConto);
+					dispoRepo.addBalanceDebit(userToPay.getNumeroconto(), 0.00, debitoConto);
 					// pago chi deve riceve
-					Double updateContoReceive = userToReceive.getSaldoAttuale() + request.getImporto();
-					dispoRepo.addBalance(userToReceive.getNumeroConto(), updateContoReceive);
+					Double updateContoReceive = userToReceive.getSaldoattuale() + request.getImporto();
+					dispoRepo.addBalance(userToReceive.getNumeroconto(), updateContoReceive);
 				}
 			}// non ha soldi e supera platform debito torno eccezione 
 			else {
@@ -113,14 +113,14 @@ public class DispoService {
 				return response;
 			}
 		}else {
-			Double soldiConto = userToPay.getSaldoAttuale();
+			Double soldiConto = userToPay.getSaldoattuale();
 
 			if(soldiConto >= request.getImporto()) {
 				Double updateContoPay = soldiConto - request.getImporto();
 				// pago diretto
-				dispoRepo.addBalance(userToPay.getNumeroConto(), updateContoPay);
+				dispoRepo.addBalance(userToPay.getNumeroconto(), updateContoPay);
 				// addo a chi riceve
-				dispoRepo.addBalance(userToReceive.getNumeroConto(), request.getImporto());
+				dispoRepo.addBalance(userToReceive.getNumeroconto(), request.getImporto());
 			}else {
 				response.setCodiceEsito("erko-cash");
 				response.setIsError(true);
@@ -138,14 +138,14 @@ public class DispoService {
 		private Boolean makeTransactionDebit(Double importo,DispoConteUtente conto ) {
 
 			//caso 1 ci sono soldi sul conto
-			if(importo <= conto.getSaldoAttuale()) {
+			if(importo <= conto.getSaldoattuale()) {
 				return true;
 			}
 			//caso 2 non ci sono soldi su conto, ma puo andare in debito
-			else if(importo > conto.getSaldoAttuale() && Constants.Dispo.DEBIT_LIMIT > conto.getDebito()) {
+			else if(importo > conto.getSaldoattuale() && Constants.Dispo.DEBIT_LIMIT > conto.getDebito()) {
 
 				//controllo che importo non faccia superare tetto massimo
-				if(conto.getDebito()+importo <= Constants.Dispo.DEBIT_LIMIT+conto.getSaldoAttuale()) 
+				if(conto.getDebito()+importo <= Constants.Dispo.DEBIT_LIMIT+conto.getSaldoattuale()) 
 					return true;
 				
 				else
@@ -172,8 +172,8 @@ public class DispoService {
 			
 			DispoConteUtente account = new DispoConteUtente();
 			String numeroConto = ut.get().getUsername()+ut.get().getBt().hashCode();
-			account.setNumeroConto(numeroConto);
-			account.setSaldoAttuale(request.getImporto());
+			account.setNumeroconto(numeroConto);
+			account.setSaldoattuale(request.getImporto());
 			account.setTipoConto(request.getTipoConto());
 			
 			Double debito = (ObjectUtils.isEmpty(request.getDebito()) ? 0.00 : request.getDebito());

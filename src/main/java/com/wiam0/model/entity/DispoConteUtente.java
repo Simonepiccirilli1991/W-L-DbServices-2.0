@@ -22,8 +22,8 @@ public class DispoConteUtente {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id;
-	private Double saldoAttuale;
-	private String numeroConto;
+	private Double saldoattuale;
+	private String numeroconto;
 	private String tipoConto;
 	private Double debito;
 	@OneToOne(fetch = FetchType.LAZY, optional = false)
@@ -32,17 +32,17 @@ public class DispoConteUtente {
 	@JsonIgnore
 	private Utente utente;
 	
-	public Double getSaldoAttuale() {
-		return saldoAttuale;
+	public Double getSaldoattuale() {
+		return saldoattuale;
 	}
-	public void setSaldoAttuale(Double saldoAttuale) {
-		this.saldoAttuale = saldoAttuale;
+	public void setSaldoattuale(Double saldoattuale) {
+		this.saldoattuale = saldoattuale;
 	}
-	public String getNumeroConto() {
-		return numeroConto;
+	public String getNumeroconto() {
+		return numeroconto;
 	}
-	public void setNumeroConto(String numeroConto) {
-		this.numeroConto = numeroConto;
+	public void setNumeroconto(String numeroconto) {
+		this.numeroconto = numeroconto;
 	}
 	public String getTipoConto() {
 		return tipoConto;

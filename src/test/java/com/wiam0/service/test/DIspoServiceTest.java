@@ -36,16 +36,16 @@ public class DIspoServiceTest {
 		// setto dto di chi paga
 		DispoConteUtente utenteToPay = new DispoConteUtente();
 		utenteToPay.setTipoConto(Constants.Dispo.DISPO_DEBIT);
-		utenteToPay.setNumeroConto("conto1");
-		utenteToPay.setSaldoAttuale(35.00);
+		utenteToPay.setNumeroconto("conto1");
+		utenteToPay.setSaldoattuale(35.00);
 		utenteToPay.setDebito(235.00);
 		
 		
 		// setto dto di chi paga
 		DispoConteUtente utenteToreceive = new DispoConteUtente();
 		utenteToPay.setTipoConto(Constants.Dispo.DISPO_DEBIT);
-		utenteToPay.setNumeroConto("conto2");
-		utenteToPay.setSaldoAttuale(0.00);
+		utenteToPay.setNumeroconto("conto2");
+		utenteToPay.setSaldoattuale(0.00);
 		utenteToPay.setDebito(0.00);
 
 		when(dispoRepo.findByUtenteUsername(request.getUsernameToPay())).thenReturn(utenteToPay);

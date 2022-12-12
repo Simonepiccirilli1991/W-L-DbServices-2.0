@@ -41,8 +41,8 @@ public class DispoDbScryptTest {
 		 
 		 System.out.println(response);
 		 
-		Optional<Utente>  iUtente = response.stream().filter(resp -> resp.getUsername().equals("usernameProva1")).findAny();
+		Optional<Utente>  iUtente = response.stream().filter(resp -> resp.getUsername().equals("usernameProva2")).findAny();
 		
-		assertThat(iUtente.get().getAbi()).isEqualTo("abiProva1");
+		assertThat(iUtente.get().getAbi()).isEqualTo("abiProva2");
 	}
 }

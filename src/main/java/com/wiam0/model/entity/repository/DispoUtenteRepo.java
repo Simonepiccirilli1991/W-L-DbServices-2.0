@@ -26,13 +26,8 @@ public interface DispoUtenteRepo extends JpaRepository<DispoConteUtente, Long>{
 		    @Transactional
 		    int addBalanceDebit(@Param("numeroConto") String numeroConto, @Param("saldoAttuale") double saldoAttuale, @Param("debito") Double debito);
 	  
-	  @Query(value = """
-		        UPDATE account
-		        SET saldoAttuale = :saldoAttuale
-		        WHERE numeroConto = :numeroConto
-		        """,
-		        nativeQuery = true)
-		    @Modifying
-		    @Transactional
-		    int addBalance(@Param("numeroConto") String numeroConto, @Param("saldoAttuale") double saldoAttuale);
+	  @Query(value = "UPDATE account SET saldoattuale\\=:saldoattuale WHERE numeroconto\\=:numeroconto",nativeQuery = true)
+	  @Modifying
+	  @Transactional
+	  int addBalance(@Param("numeroconto") String numeroconto, @Param("saldoattuale") double saldoattuale);
 }

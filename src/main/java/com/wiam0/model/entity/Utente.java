@@ -15,7 +15,7 @@ import javax.persistence.UniqueConstraint;
 
 
 @Entity
-@Table(schema="wiam0", name = "utente", uniqueConstraints=
+@Table( name = "utente", uniqueConstraints=
 @UniqueConstraint(columnNames={"username"}))
 @PrimaryKeyJoinColumn(name="utente_username")
 public class Utente {
