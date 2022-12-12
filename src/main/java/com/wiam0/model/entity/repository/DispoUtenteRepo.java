@@ -17,22 +17,22 @@ public interface DispoUtenteRepo extends JpaRepository<DispoConteUtente, Long>{
 	
 	  @Query(value = """
 		        UPDATE account
-		        SET saldoAttuale = :saldo
+		        SET saldoAttuale = :saldoAttuale
 		        SET debito = :debito
-		        WHERE utente_username = :utente_username
+		        WHERE numeroConto = :numeroConto
 		        """,
 		        nativeQuery = true)
 		    @Modifying
 		    @Transactional
-		    int addBalanceDebit(@Param("utente_username") String username, @Param("saldo") double saldo, @Param("debito") Double debito);
+		    int addBalanceDebit(@Param("numeroConto") String numeroConto, @Param("saldoAttuale") double saldoAttuale, @Param("debito") Double debito);
 	  
 	  @Query(value = """
 		        UPDATE account
-		        SET saldoAttuale = :saldo
-		        WHERE utente_username = :utente_username
+		        SET saldoAttuale = :saldoAttuale
+		        WHERE numeroConto = :numeroConto
 		        """,
 		        nativeQuery = true)
 		    @Modifying
 		    @Transactional
-		    int addBalance(@Param("utente_username") String username, @Param("saldo") double saldo);
+		    int addBalance(@Param("numeroConto") String numeroConto, @Param("saldoAttuale") double saldoAttuale);
 }

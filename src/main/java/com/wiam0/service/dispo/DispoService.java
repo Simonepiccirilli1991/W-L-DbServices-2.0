@@ -1,5 +1,9 @@
 package com.wiam0.service.dispo;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -7,7 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import com.wiam0.model.entity.DispoConteUtente;
+import com.wiam0.model.entity.Utente;
 import com.wiam0.model.entity.repository.DispoUtenteRepo;
+import com.wiam0.model.entity.repository.UtenteRepo;
 import com.wiam0.service.request.DispoRequest;
 import com.wiam0.service.response.DIspoResponse;
 import com.wiam0.util.Constants;
@@ -19,6 +25,8 @@ public class DispoService {
 
 	@Autowired
 	DispoUtenteRepo dispoRepo;
+	@Autowired
+	UtenteRepo utRepo;
 
 	@Transactional(isolation = Isolation.REPEATABLE_READ)
 	public DIspoResponse dispoPayService(DispoRequest request) {
@@ -66,18 +74,21 @@ public class DispoService {
 					//controllo se puo pagare diretto
 					if(soldiConto >= request.getImporto()) {
 						Double updateContoPay = soldiConto - request.getImporto();
-						// pago diretto
-						dispoRepo.addBalance(request.getBtToPay(), updateContoPay);
-						// addo a chi riceve
-						dispoRepo.addBalance(request.getBtToReceiv(), request.getImporto());
+						Double updateContoReceive = userToReceive.getSaldoAttuale() + request.getImporto();
+						// scalo soldi da chi paga
+						userToPay.setSaldoAttuale(updateContoPay);
+						dispoRepo.addBalance(userToPay.getNumeroConto(), updateContoPay);
+						// addo soldi a chi riceve
+						dispoRepo.addBalance(userToReceive.getNumeroConto(), updateContoReceive);
 					}//non puo pagare diretto
 					else {
 						// calcolo quanto scalare a conto e aggiungere a debito
 						Double effective = request.getImporto() - soldiConto;
-						debitoConto = debitoConto + effective;
-						dispoRepo.addBalanceDebit(request.getUsernameToPay(), 0, debitoConto);
+						debitoConto = debitoConto + effective;	
+						dispoRepo.addBalanceDebit(userToPay.getNumeroConto(), 0.00, debitoConto);
 						// pago chi deve riceve
-						dispoRepo.addBalance(request.getBtToReceiv(), request.getImporto());
+						Double updateContoReceive = userToReceive.getSaldoAttuale() + request.getImporto();
+						dispoRepo.addBalance(userToReceive.getNumeroConto(), updateContoReceive);
 					}
 
 				}//caso2 non li ha vado diretto su debito, so gia che puo farlo se arriva qui
@@ -85,9 +96,13 @@ public class DispoService {
 					// calcolo quanto scalare a conto e aggiungere a debito
 					Double effective = request.getImporto() - soldiConto;
 					debitoConto = debitoConto + effective;
-					dispoRepo.addBalanceDebit(request.getUsernameToPay(), 0, debitoConto);
+					userToPay.setDebito(debitoConto);
+					userToPay.setSaldoAttuale(0.00);
+					
+					dispoRepo.addBalanceDebit(userToPay.getNumeroConto(), 0.00, debitoConto);
 					// pago chi deve riceve
-					dispoRepo.addBalance(request.getBtToReceiv(), request.getImporto());
+					Double updateContoReceive = userToReceive.getSaldoAttuale() + request.getImporto();
+					dispoRepo.addBalance(userToReceive.getNumeroConto(), updateContoReceive);
 				}
 			}// non ha soldi e supera platform debito torno eccezione 
 			else {
@@ -103,9 +118,9 @@ public class DispoService {
 			if(soldiConto >= request.getImporto()) {
 				Double updateContoPay = soldiConto - request.getImporto();
 				// pago diretto
-				dispoRepo.addBalance(request.getBtToPay(), updateContoPay);
+				dispoRepo.addBalance(userToPay.getNumeroConto(), updateContoPay);
 				// addo a chi riceve
-				dispoRepo.addBalance(request.getBtToReceiv(), request.getImporto());
+				dispoRepo.addBalance(userToReceive.getNumeroConto(), request.getImporto());
 			}else {
 				response.setCodiceEsito("erko-cash");
 				response.setIsError(true);
@@ -124,16 +139,16 @@ public class DispoService {
 
 			//caso 1 ci sono soldi sul conto
 			if(importo <= conto.getSaldoAttuale()) {
-				//TODO fai transazione
 				return true;
 			}
 			//caso 2 non ci sono soldi su conto, ma puo andare in debito
 			else if(importo > conto.getSaldoAttuale() && Constants.Dispo.DEBIT_LIMIT > conto.getDebito()) {
 
 				//controllo che importo non faccia superare tetto massimo
-				if(conto.getDebito()+importo <= Constants.Dispo.DEBIT_LIMIT+conto.getSaldoAttuale()) {
-					//TODO fai transazione
-				}else
+				if(conto.getDebito()+importo <= Constants.Dispo.DEBIT_LIMIT+conto.getSaldoAttuale()) 
+					return true;
+				
+				else
 					return false;
 
 			}
@@ -141,4 +156,60 @@ public class DispoService {
 			return false;
 		}
 	
+		// insert
+		public DIspoResponse insertDispoAccount(DispoRequest request) {
+			
+			DIspoResponse response = new DIspoResponse();
+			
+			Optional<Utente> ut = Optional.of(utRepo.findByBt(request.getBtToReceiv()));
+			
+			if(ut.isEmpty()) {
+				response.setCodiceEsito("Erko-03");
+				response.setErrDsc("utente not found");
+				response.setIsError(true);
+				return response;
+			}
+			
+			DispoConteUtente account = new DispoConteUtente();
+			String numeroConto = ut.get().getUsername()+ut.get().getBt().hashCode();
+			account.setNumeroConto(numeroConto);
+			account.setSaldoAttuale(request.getImporto());
+			account.setTipoConto(request.getTipoConto());
+			
+			Double debito = (ObjectUtils.isEmpty(request.getDebito()) ? 0.00 : request.getDebito());
+			account.setDebito(debito);
+			account.setUtente(ut.get());
+			dispoRepo.save(account);
+			
+			response.setCodiceEsito("00");
+			response.setNumeroConto(numeroConto);
+			
+			return response;
+		}
+		// get
+		public DIspoResponse getDispoInfo(DispoRequest request) {
+			
+			DIspoResponse response = new DIspoResponse();
+			List<DispoConteUtente> dispoList = new ArrayList<>();
+			try {
+				dispoList = dispoRepo.findAll();
+			}catch(Exception e) {
+				response.setCodiceEsito("erko-03");
+				response.setErrDsc("Utente dispo not found");
+				response.setIsError(true);
+				return response;
+			}
+			
+			Optional<DispoConteUtente> utDispo = dispoList.stream().filter(resp -> resp.getUtente().getBt().equals(request.getBtToReceiv())).findAny();
+			if(utDispo.isEmpty()) {
+				response.setCodiceEsito("erko-03");
+				response.setErrDsc("Utente dispo not found");
+				response.setIsError(true);
+				return response;
+			}
+			response.setDispoInfo(utDispo.get());
+			response.setCodiceEsito("00");
+			
+			return response;
+		}
 }

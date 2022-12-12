@@ -10,6 +10,8 @@ public class DispoRequest {
 	private String btToPay;
 	private Double importo;
 	private String btToReceiv;
+	private Double debito;
+	private String tipoConto;
 	
 	public String getBtToPay() {
 		return btToPay;

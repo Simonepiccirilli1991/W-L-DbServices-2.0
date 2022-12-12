@@ -56,6 +56,12 @@ public class DispoConteUtente {
 	public void setDebito(Double debito) {
 		this.debito = debito;
 	}
+	public Utente getUtente() {
+		return utente;
+	}
+	public void setUtente(Utente utente) {
+		this.utente = utente;
+	}
 	
 	
 	
