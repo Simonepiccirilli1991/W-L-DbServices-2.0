@@ -1,6 +1,6 @@
 package com.wiam0.service.response;
 
-import com.wiam0.model.entity.DispoConteUtente;
+import com.wiam0.model.entity.Account;
 import com.wiam0.model.response.BaseWiamResponse;
 
 import lombok.Data;
@@ -9,7 +9,7 @@ import lombok.Data;
 public class DIspoResponse extends BaseWiamResponse{
 
 	private Boolean transactionOk;
-	private DispoConteUtente dispoInfo;
+	private Account dispoInfo;
 	private String numeroConto;
 	
 	public Boolean getTransactionOk() {

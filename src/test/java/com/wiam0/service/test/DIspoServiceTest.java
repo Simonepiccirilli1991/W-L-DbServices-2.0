@@ -7,21 +7,23 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
-import com.wiam0.model.entity.DispoConteUtente;
-import com.wiam0.model.entity.repository.DispoUtenteRepo;
+import com.wiam0.model.entity.Account;
+import com.wiam0.model.entity.repository.AccountRepo;
 import com.wiam0.service.dispo.DispoService;
 import com.wiam0.service.request.DispoRequest;
 import com.wiam0.service.response.DIspoResponse;
 import com.wiam0.util.Constants;
 
 @SpringBootTest
+@ActiveProfiles("test")
 public class DIspoServiceTest {
 
 	@Autowired
 	DispoService dispoService;
 	@Mock
-	DispoUtenteRepo dispoRepo;
+	AccountRepo dispoRepo;
 	
 	//@Test // test 1 - utente   ha conto debito con saldo sopra e debito attivo
 	public void makeDispoOK() {
@@ -34,7 +36,7 @@ public class DIspoServiceTest {
 		request.setUsernameToReceive("testToReceive");
 		
 		// setto dto di chi paga
-		DispoConteUtente utenteToPay = new DispoConteUtente();
+		Account utenteToPay = new Account();
 		utenteToPay.setTipoConto(Constants.Dispo.DISPO_DEBIT);
 		utenteToPay.setNumeroconto("conto1");
 		utenteToPay.setSaldoattuale(35.00);
@@ -42,7 +44,7 @@ public class DIspoServiceTest {
 		
 		
 		// setto dto di chi paga
-		DispoConteUtente utenteToreceive = new DispoConteUtente();
+		Account utenteToreceive = new Account();
 		utenteToPay.setTipoConto(Constants.Dispo.DISPO_DEBIT);
 		utenteToPay.setNumeroconto("conto2");
 		utenteToPay.setSaldoattuale(0.00);

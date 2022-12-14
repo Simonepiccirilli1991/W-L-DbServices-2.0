@@ -10,9 +10,9 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
-import com.wiam0.model.entity.DispoConteUtente;
+import com.wiam0.model.entity.Account;
 import com.wiam0.model.entity.Utente;
-import com.wiam0.model.entity.repository.DispoUtenteRepo;
+import com.wiam0.model.entity.repository.AccountRepo;
 import com.wiam0.model.entity.repository.UtenteRepo;
 import com.wiam0.service.request.DispoRequest;
 import com.wiam0.service.response.DIspoResponse;
@@ -24,7 +24,7 @@ import com.wiam0.util.Constants;
 public class DispoService {
 
 	@Autowired
-	DispoUtenteRepo dispoRepo;
+	AccountRepo dispoRepo;
 	@Autowired
 	UtenteRepo utRepo;
 
@@ -42,8 +42,8 @@ public class DispoService {
 		}
 
 
-		DispoConteUtente userToPay = null;
-		DispoConteUtente userToReceive = null;
+		Account userToPay = null;
+		Account userToReceive = null;
 
 		try {
 			userToPay = dispoRepo.findByUtenteUsername(request.getUsernameToPay());
@@ -135,7 +135,7 @@ public class DispoService {
 			return response;
 		}
 
-		private Boolean makeTransactionDebit(Double importo,DispoConteUtente conto ) {
+		private Boolean makeTransactionDebit(Double importo,Account conto ) {
 
 			//caso 1 ci sono soldi sul conto
 			if(importo <= conto.getSaldoattuale()) {
@@ -170,7 +170,7 @@ public class DispoService {
 				return response;
 			}
 			
-			DispoConteUtente account = new DispoConteUtente();
+			Account account = new Account();
 			String numeroConto = ut.get().getUsername()+ut.get().getBt().hashCode();
 			account.setNumeroconto(numeroConto);
 			account.setSaldoattuale(request.getImporto());
@@ -190,7 +190,7 @@ public class DispoService {
 		public DIspoResponse getDispoInfo(DispoRequest request) {
 			
 			DIspoResponse response = new DIspoResponse();
-			List<DispoConteUtente> dispoList = new ArrayList<>();
+			List<Account> dispoList = new ArrayList<>();
 			try {
 				dispoList = dispoRepo.findAll();
 			}catch(Exception e) {
@@ -200,7 +200,7 @@ public class DispoService {
 				return response;
 			}
 			
-			Optional<DispoConteUtente> utDispo = dispoList.stream().filter(resp -> resp.getUtente().getBt().equals(request.getBtToReceiv())).findAny();
+			Optional<Account> utDispo = dispoList.stream().filter(resp -> resp.getUtente().getBt().equals(request.getBtToReceiv())).findAny();
 			if(utDispo.isEmpty()) {
 				response.setCodiceEsito("erko-03");
 				response.setErrDsc("Utente dispo not found");

@@ -13,9 +13,9 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.ActiveProfiles;
 
-import com.wiam0.model.entity.DispoConteUtente;
+import com.wiam0.model.entity.Account;
 import com.wiam0.model.entity.Utente;
-import com.wiam0.model.entity.repository.DispoUtenteRepo;
+import com.wiam0.model.entity.repository.AccountRepo;
 import com.wiam0.model.entity.repository.UtenteRepo;
 import com.wiam0.service.dispo.DispoService;
 import com.wiam0.service.request.DispoRequest;
@@ -31,7 +31,7 @@ public class DispoDbTest {
 	@Autowired
 	UtenteRepo utenteRepo;
 	@Autowired
-	DispoUtenteRepo accountRepo;
+	AccountRepo accountRepo;
 	@Autowired
 	DispoService dispoService;
 
@@ -77,21 +77,21 @@ public class DispoDbTest {
 		
 		utenteRepo.saveAll(listaUtenti);
 		
-		DispoConteUtente accountPay = new DispoConteUtente();
+		Account accountPay = new Account();
 		accountPay.setDebito(0.00);
 		accountPay.setNumeroconto("1234");
 		accountPay.setSaldoattuale(100.00);
 		accountPay.setTipoConto(Constants.Dispo.DISPO_PREP);
 		accountPay.setUtente(utentePay);
 		
-		DispoConteUtente accountReceive = new DispoConteUtente();
+		Account accountReceive = new Account();
 		accountReceive.setDebito(0.00);
 		accountReceive.setNumeroconto("1111");
 		accountReceive.setSaldoattuale(120.00);
 		accountPay.setTipoConto(Constants.Dispo.DISPO_PREP);
 		accountReceive.setUtente(utenteReceive);
 		
-		List<DispoConteUtente> listaAccount = new ArrayList<DispoConteUtente>();
+		List<Account> listaAccount = new ArrayList<Account>();
 		listaAccount.add(accountReceive); listaAccount.add(accountPay);
 		
 		accountRepo.saveAll(listaAccount);

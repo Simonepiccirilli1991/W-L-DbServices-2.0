@@ -16,4 +16,10 @@ public class Constants {
 		public static final String DISPO_PREP = "Dispo_conto_prep";
 		public static final Double DEBIT_LIMIT = (double) 1000.00;
 	}
+	
+	public static class CommonUtil{
+		
+		public static final String CF = "cf";
+		public static final String NAME = "nome";
+	}
 }

@@ -17,7 +17,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "account")
-public class DispoConteUtente {
+public class Account {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -32,6 +32,12 @@ public class DispoConteUtente {
 	@JsonIgnore
 	private Utente utente;
 	
+	public long getId() {
+		return id;
+	}
+	public void setId(long id) {
+		this.id = id;
+	}
 	public Double getSaldoattuale() {
 		return saldoattuale;
 	}
@@ -62,6 +68,8 @@ public class DispoConteUtente {
 	public void setUtente(Utente utente) {
 		this.utente = utente;
 	}
+	
+	
 	
 	
 	

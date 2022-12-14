@@ -48,7 +48,7 @@ public class Utente {
 	
 	@OneToOne(mappedBy = "utente", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL)
-	private DispoConteUtente dispoUtente;
+	private Account dispoUtente;
 	
 	public String getBt() {
 		return bt;
@@ -104,10 +104,10 @@ public class Utente {
 	public void setPinUtente(PinUtente pinUtente) {
 		this.pinUtente = pinUtente;
 	}
-	public DispoConteUtente getDispoUtente() {
+	public Account getDispoUtente() {
 		return dispoUtente;
 	}
-	public void setDispoUtente(DispoConteUtente dispoUtente) {
+	public void setDispoUtente(Account dispoUtente) {
 		this.dispoUtente = dispoUtente;
 	}
 	public long getId() {

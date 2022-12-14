@@ -1,5 +1,8 @@
 package com.wiam0.service.anagrafica;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -8,6 +11,7 @@ import com.wiam0.model.entity.Utente;
 import com.wiam0.model.entity.repository.AnagraficaRepo;
 import com.wiam0.model.entity.repository.UtenteRepo;
 import com.wiam0.model.response.BaseWiamResponse;
+import com.wiam0.service.response.AnagraficaResponse;
 import com.wiam0.util.Constants;
 
 @Service
@@ -16,7 +20,7 @@ public class AnagraficaService {
 	@Autowired private AnagraficaRepo anagRepo;
 	@Autowired private UtenteRepo utRepo;
 	
-	
+	// insert
 	public BaseWiamResponse salvaAnagrafica(String username, String bt, Anagrafica anagrafica) {
 		
 		BaseWiamResponse oResponse = new BaseWiamResponse();
@@ -37,9 +41,11 @@ public class AnagraficaService {
 			oResponse.setCodiceEsito(Constants.BaseWiamResponseC.esitoCodiceKo);
 		}
 		
+		oResponse.setCodiceEsito("00");
 		return oResponse;
 	}
 	
+	//update
 	public BaseWiamResponse modificaAnagrafica(String username, String bt, Anagrafica anagrafica) {
 
 		BaseWiamResponse oResponse = new BaseWiamResponse();
@@ -72,6 +78,7 @@ public class AnagraficaService {
 			oResponse.setCodiceEsito(Constants.BaseWiamResponseC.esitoCodiceKo);
 		}
 
+		oResponse.setCodiceEsito("00");
 		return oResponse;
 	}
 	
@@ -99,5 +106,59 @@ public class AnagraficaService {
 		}
 		
 		return oResponse;
+	}
+	
+	//get all by name
+	public AnagraficaResponse getAnagraficaByName(String nome){
+		
+		AnagraficaResponse response = new AnagraficaResponse();
+		Optional<List<Anagrafica>>  responseList = null;
+		
+		try {
+			responseList = Optional.of(anagRepo.anagraficaByName(nome));
+		}catch(Exception e) {
+			response.setCodiceEsito("ERKO-05");
+			response.setErrDsc("internal server error");
+			response.setIsError(true);
+			return response;
+		}
+		
+		if(responseList.isEmpty()) {
+			response.setCodiceEsito("ERKO-06");
+			response.setErrDsc("no values found internal db");
+			response.setIsError(true);
+		}
+		
+		response.setListaAnagrafica(responseList.get());
+		response.setCodiceEsito("00");
+		return response;
+		
+	}
+	
+	//get all by cf
+	public AnagraficaResponse getAnagraficaByCF(String cf){
+
+		AnagraficaResponse response = new AnagraficaResponse();
+		Optional<List<Anagrafica>>  responseList = null;
+
+		try {
+			responseList = anagRepo.anagraficaByCf(cf);
+		}catch(Exception e) {
+			response.setCodiceEsito("ERKO-05");
+			response.setErrDsc("internal server error");
+			response.setIsError(true);
+			return response;
+		}
+
+		if(responseList.isEmpty()) {
+			response.setCodiceEsito("ERKO-06");
+			response.setErrDsc("no values found internal db");
+			response.setIsError(true);
+		}
+
+		response.setListaAnagrafica(responseList.get());
+		response.setCodiceEsito("00");
+		return response;
+
 	}
 }

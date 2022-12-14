@@ -13,6 +13,8 @@ import com.wiam0.model.entity.Anagrafica;
 import com.wiam0.model.response.BaseWiamResponse;
 import com.wiam0.service.anagrafica.AnagraficaService;
 import com.wiam0.service.request.AnagraficaRequest;
+import com.wiam0.service.response.AnagraficaResponse;
+import com.wiam0.util.Constants;
 
 
 @RestController
@@ -51,14 +53,34 @@ public class AnagraficaController {
 		return new ResponseEntity<>(anagService.modificaAnagrafica(request.getUsername(), request.getBt(), request.getAnagrafica()), HttpStatus.OK);
 	}
 
-	// TODO inserire delete
+	//cancella anagrafica
 	@PostMapping("delete/sc/ag")
 	public ResponseEntity<BaseWiamResponse> cancellaAnagrafica(@RequestBody AnagraficaRequest request){
 
 		return new ResponseEntity<>(anagService.cancellaAnagrafica(request.getUsername(), request.getBt(), request.getAnagrafica()), HttpStatus.OK);
 
-
-
+	}
+	// get all anagrafica by cf o nome 
+	@RequestMapping("get/{tiporicerca}/info/{valore}")
+	public ResponseEntity<AnagraficaResponse> getAnagrafica(@PathVariable (value = "tiporicerca") String tiporiceca,
+			@PathVariable (value = "valore") String valore){
+		
+		AnagraficaResponse response = new AnagraficaResponse();
+		
+		if(tiporiceca.equals(Constants.CommonUtil.CF)) {
+			
+			return new ResponseEntity<>(anagService.getAnagraficaByCF(valore), HttpStatus.OK);
+		}
+		else if(tiporiceca.equals(Constants.CommonUtil.NAME)) {
+			
+			return new ResponseEntity<>(anagService.getAnagraficaByName(valore), HttpStatus.OK);
+		}
+		else {
+			response.setErrDsc("invalid request");
+			response.setCodiceEsito("ERKO-02");
+		}
+		
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 	
 }
